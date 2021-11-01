@@ -1,0 +1,64 @@
+# usage:
+#       $ kind create cluster --config kind-cluster-config.yaml --image kindest/node:v1.19.11
+#       $ kubectl label nodes kind-control-plane ingress-ready=true
+#       $ kubectl label nodes kind-control-plane2 ingress-ready=true
+# ingress addon steps:
+#       $ kubectl apply -f https://projectcontour.io/quickstart/contour.yaml
+#   Contour:
+#       $ kubectl patch daemonsets -n projectcontour envoy -p '{"spec":{"template":{"spec":{"nodeSelector":{"ingress-ready":"true"},"tolerations":[{"key":"node-role.kubernetes.io/master","operator":"Equal","effect":"NoSchedule"}]}}}}'
+
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+
+# patch the generated kubeadm config with some extra settings
+# kubeadmConfigPatches:
+# - |
+#   apiVersion: kubelet.config.k8s.io/v1beta1
+#   kind: KubeletConfiguration
+#   evictionHard:
+#     nodefs.available: "0%"
+
+# patch it further using a JSON 6902 patch
+# kubeadmConfigPatchesJSON6902:
+# - group: kubeadm.k8s.io
+#   version: v1beta2
+#   kind: ClusterConfiguration
+#   patch: |
+#     - op: add
+#       path: /apiServer/certSANs/-
+#       value: my-hostname
+
+nodes:
+- extraMounts:
+  - hostPath: /dev/mapper
+    containerPath: /dev/mapper
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  - containerPort: 30000
+    hostPort: 30000
+    protocol: TCP
+  - containerPort: 30122
+    hostPort: 30122
+    protocol: TCP
+  - containerPort: 30222
+    hostPort: 30222
+    protocol: TCP
+  - containerPort: 30322
+    hostPort: 30322
+    protocol: TCP
+  - containerPort: 80
+    hostPort: 80
+    protocol: TCP
+  - containerPort: 443
+    hostPort: 443
+    protocol: TCP
+- role: worker
+- role: worker
+- role: worker
