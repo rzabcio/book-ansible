@@ -5,10 +5,10 @@
     - name: Nginx install
       yum: name=nginx update_cache=yes
     - name: Copying Nginx config file
-      copy: src=files/nginx.conf dest=/etc/nginx/default.d/default.conf
+      copy: src=files/02-nginx.conf dest=/etc/nginx/default.d/default.conf
     - name: Copying index.html
       template: >
-        src=templates/index.html.j2
+        src=templates/02-index.html.j2
         dest=/usr/share/nginx/html/index.html
         mode=0644
     - name: Restarting Nginx

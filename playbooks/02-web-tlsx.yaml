@@ -18,11 +18,11 @@
       copy: src=files/nginx.crt dest={{ cert_file }}
       notify: Restart Nginx
     - name: Copying Nginx config file
-      template: src=files/nginx.conf.j2 dest={{ conf_file }}
+      template: src=files/02-nginx.conf.j2 dest={{ conf_file }}
       notify: Restart Nginx
     - name: Copying index.html
       template: >
-        src=templates/index.html.j2
+        src=templates/02-index.html.j2
         dest=/usr/share/nginx/html/index.html
         mode=0644
   handlers:
