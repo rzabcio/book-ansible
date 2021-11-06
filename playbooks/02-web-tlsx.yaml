@@ -1,0 +1,30 @@
+- name: Configuring Nginx WWW server
+  hosts: webservers
+  become: True
+  vars:
+    key_file: /etc/nginx/ssl/nginx.key
+    cert_file: /etc/nginx/ssl/nginx.crt
+    conf_file: /etc/nginx/default.d/default.conf
+    server_name: localhost
+  tasks:
+    - name: Nginx install
+      yum: name=nginx update_cache=yes
+    - name: Creating cert directories
+      file: path=/etc/nginx/ssl state=directory
+    - name: Copying TLS key
+      copy: src=files/nginx.key dest={{ key_file }} owner=root mode=0600
+      notify: Restart Nginx
+    - name: Copying TLS cert
+      copy: src=files/nginx.crt dest={{ cert_file }}
+      notify: Restart Nginx
+    - name: Copying Nginx config file
+      template: src=files/nginx.conf.j2 dest={{ conf_file }}
+      notify: Restart Nginx
+    - name: Copying index.html
+      template: >
+        src=templates/index.html.j2
+        dest=/usr/share/nginx/html/index.html
+        mode=0644
+  handlers:
+    - name: Restart Nginx
+      service: name=nginx state=restarted

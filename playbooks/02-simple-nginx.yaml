@@ -1,0 +1,15 @@
+- name: Configuring Nginx WWW server
+  hosts: webservers
+  become: True
+  tasks:
+    - name: Nginx install
+      yum: name=nginx update_cache=yes
+    - name: Copying Nginx config file
+      copy: src=files/nginx.conf dest=/etc/nginx/default.d/default.conf
+    - name: Copying index.html
+      template: >
+        src=templates/index.html.j2
+        dest=/usr/share/nginx/html/index.html
+        mode=0644
+    - name: Restarting Nginx
+      service: name=nginx state=restarted
