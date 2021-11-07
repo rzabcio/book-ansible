@@ -43,8 +43,7 @@
     - name: Installing system packages
       yum: 
         state: present
-        update_cache: yes
-        cache_valid_time: 3600
+        update_cache: no
         name:
           - git
           - libjpeg  # was: libjpeg-dev
@@ -52,11 +51,11 @@
           - memcached
           - nginx
           - postgresql
-          - python-devel  # was: python-dev
-          - python-pip
-          - python-psycopg2
-          - python-setuptools
-          - python-virtualenv
+          - python3-devel  # was: python-dev
+          - python3-pip
+          - python3-psycopg2
+          - python3-setuptools
+          - python3-virtualenv
           - supervisor
       become: True
     - name: create project dir
@@ -65,4 +64,12 @@
       file: path="{{ ansible_env.HOME }}/logs" state=directory
     - name: checkout repo on the host
       git: repo={{ repo_url }} dest={{ proj_path }}
-
+    - name: python packages install with pip
+      pip:
+        executable: /usr/bin/pip3
+        name:
+          - pip
+          - pbr
+          - virtualenv
+          - virtualenvwrapper
+      become: True
