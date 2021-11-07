@@ -1,0 +1,12 @@
+- name: Showing 'command' module result
+  hosts: ansible1
+  tasks:
+    - name: Saving command result to register
+      command: id -un
+      register: login
+    - debug: msg = "Zalogowano jako {{login.stdout}}"
+    - name: Launching my_app
+      command: /opt/my_app
+      register: result
+      ignore_errors: True
+    - debug: var=result

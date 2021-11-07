@@ -1,0 +1,10 @@
+- name: Showing OS info
+  hosts: all
+  gather_facts: True
+  vars:
+    greeting: "You haven't got greeting (-e greeting=<greeting>)"
+  tasks:
+    - debug: var=ansible_distribution
+    - name: Showing ansible_hosts
+      debug: msg="{{ansible_play_hosts}}"
+    - debug: msg='{{ greeting }}'

@@ -1,0 +1,2 @@
+# ansible-playbook 04-facts.yaml -e @04-facts-vars.yaml
+greeting: Well, hello.
