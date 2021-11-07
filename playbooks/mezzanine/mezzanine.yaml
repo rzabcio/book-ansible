@@ -41,24 +41,28 @@
     - name: Some debugging
       debug: var=live_hostname
     - name: Installing system packages
-      yum: pkg={{ item }} update_cache=yes
+      yum: 
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+        name:
+          - git
+          - libjpeg  # was: libjpeg-dev
+          - postgresql-libs  # was: libpq-dev
+          - memcached
+          - nginx
+          - postgresql
+          - python-devel  # was: python-dev
+          - python-pip
+          - python-psycopg2
+          - python-setuptools
+          - python-virtualenv
+          - supervisor
       become: True
-      with_items:
-        - git
-        - libjpeg  # was: libjpeg-dev
-        - postgresql-libs  # was: libpq-dev
-        - memcached
-        - nginx
-        - postgresql
-        - python-devel  # was: python-dev
-        - python-pip
-        - python-psycopg2
-        - python-setuptools
-        - python-virtualenv
-        - supervisor
     - name: create project dir
       file: path={{ proj_path }} state=directory
     - name: create logs dir
       file: path="{{ ansible_env.HOME }}/logs" state=directory
     - name: checkout repo on the host
       git: repo={{ repo_url }} dest={{ proj_path }}
+
