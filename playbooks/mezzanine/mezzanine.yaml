@@ -1,6 +1,11 @@
+---
 - name: Deploy mezzanine
   # hosts: ansible1
   hosts: gcp
+
+###########################################################
+# VARIABLES
+###########################################################:w
   vars:
     user: "{{ ansible_user }}"
     proj_app: mezzanine_example
@@ -28,6 +33,10 @@
     num_workers: "multiprocessing.cpu_count() * 2 + 1"
   vars_files:
     - secrets.yaml
+
+###########################################################
+# TASKS
+###########################################################:w
   tasks:
     - name: Some debugging
       debug: var=live_hostname
