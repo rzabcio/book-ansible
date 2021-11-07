@@ -1,5 +1,5 @@
 - name: Configuring Nginx WWW server
-  hosts: webservers
+  hosts: ansible1
   become: True
   vars:
     key_file: /etc/nginx/ssl/nginx.key
