@@ -51,6 +51,8 @@
           - memcached
           - nginx
           - postgresql
+          - postgresql-devel  # new
+          - gcc  # new
           - python3-devel  # was: python-dev
           - python3-pip
           - python3-psycopg2
@@ -64,12 +66,31 @@
       file: path="{{ ansible_env.HOME }}/logs" state=directory
     - name: checkout repo on the host
       git: repo={{ repo_url }} dest={{ proj_path }}
-    - name: python packages install with pip
+    - name: python system packages install with pip
       pip:
         executable: /usr/bin/pip3
+        state: latest
         name:
           - pip
           - pbr
           - virtualenv
           - virtualenvwrapper
       become: True
+    - name: Manually create the initial virtualenv
+      command:
+        cmd: virtualenv {{ venv_path }} -p python3
+        creates: "{{ venv_path }}"
+    - name: python packages from requirements
+      pip:
+        # executable: /usr/bin/pip3
+        requirements: "{{ proj_path }}/{{ req_path }}"
+        virtualenv: "{{ venv_path }}"
+    - name: python user packages install with pip
+      pip:
+        virtualenv: "{{ venv_path }}"
+        name:
+          - gunicorn
+          - setproctitle
+          - psycopg2-binary
+          - django-compressor
+          - python-memcached
